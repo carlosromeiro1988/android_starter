@@ -1,0 +1,86 @@
+def getAllFlavorsByLabels(def labels) {
+    if ((labels == null) ||
+            (labels.size() == 0)) {
+        println("Error: Invalid label provided!")
+        return []
+    }
+
+    def flavorMap = [:]
+    android.productFlavors.all { flavor ->
+        flavorMap[flavor.name] = ""
+    }
+
+    def flavors = []
+
+    flavorMap.each { key, value ->
+        labels.each { label ->
+            if (((key?.trim()) &&
+                    key.toLowerCase().contains(label.toLowerCase())) ||
+                    key.toLowerCase().equals("all")) {
+                flavors.add(label.toLowerCase().capitalize())
+            }
+        }
+    }
+    return flavors
+}
+
+static def validateArguments(def labels, def versionCode, def deploymentIsRequired) {
+    if (!labels?.trim() ||
+            !versionCode?.trim() ||
+            !deploymentIsRequired?.trim()) {
+        throw new Exception("Error: Invalid parameters provided!")
+    }
+
+    String[] labelList = labels.split(",")
+
+    labelList.each { label ->
+        if (!label?.trim()) {
+            throw new Exception("Error: Invalid label provided!")
+        }
+    }
+}
+
+static def isDeploymentRequired(def deploymentIsRequiredFlag) {
+    def deploymentIsRequired
+    try {
+        def deploymentIsRequiredParsed = deploymentIsRequiredFlag as Integer
+        deploymentIsRequired = (deploymentIsRequiredParsed == 1)
+    } catch (Exception exception) {
+        exception.printStackTrace()
+        deploymentIsRequired = false
+    }
+
+    return deploymentIsRequired
+}
+
+project.afterEvaluate {
+    task updateVersionCode() {
+        try {
+            def versionCode = project.findProperty("versionCode")
+            def labels = project.findProperty("flavors")
+            def deploymentIsRequired = project.findProperty("deploymentIsRequired")
+
+            if (!isDeploymentRequired(deploymentIsRequired)) {
+                return
+            }
+
+            validateArguments(labels, versionCode, deploymentIsRequired)
+
+            String[] labelList = labels.split(",")
+
+            def flavorList = this.getAllFlavorsByLabels(labelList)
+            if (flavorList.size() != 0) {
+                flavorList.each { value ->
+                    def versionCodeUpdateCommandLineTask = task "execute${value}VersionUpdateCommandLine"(type: Exec) {
+                        def fileContent = "version_code ${versionCode}"
+                        workingDir = file('.')
+                        commandLine = ['cmd', '/c', "echo ${fileContent} > releases/${value.toLowerCase()}/version.properties"]
+                    }
+                    updateVersionCode.dependsOn(versionCodeUpdateCommandLineTask)
+                }
+            }
+        } catch (Exception exception) {
+            println(exception.getMessage())
+        }
+    }
+}

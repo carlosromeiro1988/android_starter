@@ -1,0 +1,50 @@
+project.afterEvaluate {
+
+    android.applicationVariants.all { variant ->
+        def variantName = variant.name
+        def testTaskName = "test${variantName.capitalize()}UnitTest"
+
+        tasks.create(name: "${testTaskName}Coverage", type: JacocoReport, dependsOn: "$testTaskName") {
+
+            group = "Reporting"
+            description = "Generate Jacoco coverage reports"
+
+            reports {
+                xml.enabled = true
+                html.enabled = true
+            }
+
+            def excludes = [
+                    '**/R.class',
+                    '**/R$*.class',
+                    '**/*$ViewInjector*.*',
+                    '**/BuildConfig.*',
+                    '**/Manifest*.*',
+                    '**/*Test*.*',
+                    'android/**/*.*',
+                    '**/*Fragment.*',
+                    '**/*Activity.*'
+            ]
+
+            // generated classes
+            classDirectories = fileTree(
+                    dir: "$project.buildDir/intermediates/javac/${variantName}",
+                    excludes: excludes
+            ) + fileTree(
+                    dir: "$project.buildDir/tmp/kotlin-classes/${variantName}",
+                    excludes: excludes
+            )
+
+            // sources
+            sourceDirectories = files([
+                    android.sourceSets.main.java.srcDirs,
+                    "src/main/java"
+            ])
+
+            executionData = fileTree(dir: "$project.buildDir", includes: [
+                    "jacoco/${testTaskName}.exec",
+                    "outputs/code-coverage/connected/*coverage.ec"
+            ])
+        }
+    }
+}

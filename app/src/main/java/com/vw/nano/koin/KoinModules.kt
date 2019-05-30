@@ -1,10 +1,10 @@
 package com.vw.nano.koin
 
-import com.vw.nano.api.ApiInterface
+import com.vw.nano.data.user.IUserService
 import com.vw.nano.data.carconfiguration.CarConfigurationRepository
 import com.vw.nano.data.user.UserRepository
 import com.vw.nano.ui.login.LoginViewModel
-import org.koin.dsl.module.module
+import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -25,7 +25,7 @@ val apiModule = module {
             .baseUrl(HOST_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(ApiInterface::class.java)
+            .create(IUserService::class.java)
     }
 }
 
