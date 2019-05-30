@@ -26,9 +26,6 @@ android {
     }
 
     buildTypes {
-        // Specifies flavors dimensions.
-        flavorDimensions "normal"
-
         debug {
             testCoverageEnabled = true
         }
@@ -37,18 +34,9 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-
-        productFlavors {
-            english {
-                applicationIdSuffix ".en"
-                versionNameSuffix "-en"
-                versionCode getCurrentVersionCode(name)
-            }
-        }
     }
 
     testOptions {
-
         unitTests.returnDefaultValues = true
         unitTests.all {
             jacoco {
@@ -62,18 +50,6 @@ android {
     }
 }
 
-// region LocalMethods
-def getCurrentVersionCode(def flavor) {
-    def versionCode = 0
-    file("$projectDir/releases/${flavor.toLowerCase()}/version.properties").withInputStream { inputStream ->
-        Properties versionProps = new Properties()
-        versionProps.load(inputStream)
-        versionCode = versionProps['version_code'].toInteger()
-    }
-    return versionCode
-}
-//endregion
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -85,16 +61,13 @@ dependencies {
     //Support Lib
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'com.google.android.material:material:1.1.0-alpha06'
 
     //Android Jetpack
     implementation 'androidx.core:core-ktx:1.0.2'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.0.0'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.0.0'
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
-
-    //Picasso
-    implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.1.0-alpha04'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.1.0-alpha04'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0-alpha01'
 
     //Data Binding
     implementation 'com.android.databinding:library:3.4.1'
@@ -108,6 +81,9 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
 
+    //Picasso
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
     //Tests
     testImplementation 'io.mockk:mockk:1.9.3'
     testImplementation 'junit:junit:4.12'
@@ -117,6 +93,6 @@ dependencies {
     testImplementation "org.jacoco:org.jacoco.ant:${rootProject.ext.jacoco_version}"
 
     //UI Test
-    androidTestImplementation 'androidx.test:runner:1.1.1'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
