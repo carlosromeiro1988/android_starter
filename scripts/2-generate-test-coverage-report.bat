@@ -3,4 +3,4 @@ setlocal enableDelayedExpansion
 
 :main
 cd ..
-call gradlew.bat testEnglishDebugUnitTestCoverage
+call gradlew.bat testDebugUnitTestCoverage
