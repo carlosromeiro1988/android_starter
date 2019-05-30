@@ -1,7 +1,11 @@
 package com.vw.nano
 
 import android.app.Application
-import org.koin.core.Koin
+import com.vw.nano.koin.apiModule
+import com.vw.nano.koin.repositoryModule
+import com.vw.nano.koin.viewModelModule
+import org.koin.android.ext.android.startKoin
+import org.koin.log.EmptyLogger
 
 /**
  * Custom Application Class
@@ -14,6 +18,11 @@ class NanoApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        Koin.create().
+        //Init Koin
+        startKoin(
+            androidContext = this,
+            logger = EmptyLogger(),
+            modules = listOf(viewModelModule, apiModule, repositoryModule)
+        )
     }
 }

@@ -1,5 +1,9 @@
 package com.vw.nano.ui.login
 
 import androidx.lifecycle.ViewModel
+import com.vw.nano.data.user.UserRepository
 
-class LoginViewModel : ViewModel()
+/**
+ * ViewModel for Login
+ */
+class LoginViewModel(private val userRepository: UserRepository) : ViewModel()
